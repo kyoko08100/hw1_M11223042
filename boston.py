@@ -23,6 +23,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.optimizers import SGD
 
+#清空model
 keras.backend.clear_session()
 np.random.seed(1)
 tf.random.set_seed(1)
@@ -36,10 +37,44 @@ model.summary()
 
 weights, biases = model.layers[1].get_weights()
 
-model.compile(loss='mse',
-              optimizer=SGD(learning_rate=1e-3))
+
+
+# 優化ADAM、LOSS MSE、batch_size=32、epochs=20
+
+print("優化ADAM、LOSS MSE、batch_size=32、epochs=20")
+
+model.compile(optimizer='adam',
+              loss='mse',
+              metrics=[
+              'MeanAbsoluteError',
+              'MeanAbsolutePercentageError',
+              'RootMeanSquaredError',])
+            #   optimizer=SGD(learning_rate=1e-3))
+
 result= model.fit(x_train, y_train,
                   batch_size=32,
+                  epochs=20,
+                  validation_data=(x_valid, y_valid))
+            
+pd.DataFrame(result.history).plot()
+plt.grid(True)
+plt.show()
+
+model.evaluate(test_data,test_targets)
+
+#   優化ADAM、LOSS MSE、batch_size=64、epochs=20
+print("優化ADAM、LOSS MSE、batch_size=64、epochs=20")
+
+model.compile(optimizer='adam',
+              loss='mse',
+              metrics=[
+              'MeanAbsoluteError',
+              'MeanAbsolutePercentageError',
+              'RootMeanSquaredError',])
+            #   optimizer=SGD(learning_rate=1e-3))
+
+result= model.fit(x_train, y_train,
+                  batch_size=64,
                   epochs=20,
                   validation_data=(x_valid, y_valid))
             
@@ -53,23 +88,24 @@ model.evaluate(test_data,test_targets)
 
 
 
-# mean=train_data.mean(axis=0)
-# train_data -= mean
-# std=train_data.std(axis=0)
-# train_data /= std # z-score data normalization
-# test_data -= mean
-# test_data /= std 
+#   優化ADAM、LOSS MSE、batch_size=64、epochs=40
+print("優化ADAM、LOSS MSE、batch_size=64、epochs=40")
 
-# from keras import models
-# from keras import layers
+model.compile(optimizer='adam',
+              loss='mse',
+              metrics=[
+              'MeanAbsoluteError',
+              'MeanAbsolutePercentageError',
+              'RootMeanSquaredError',])
+            #   optimizer=SGD(learning_rate=1e-3))
 
+result= model.fit(x_train, y_train,
+                  batch_size=64,
+                  epochs=40,
+                  validation_data=(x_valid, y_valid))
+            
+pd.DataFrame(result.history).plot()
+plt.grid(True)
+plt.show()
 
-# model = models.Sequential()
-# model.add(layers.Dense(64, activation='relu', input_shape=(train_data.shape[1],)))
-# model.add(layers.Dense(64, activation='relu'))
-# model.add(layers.Dense(1))
-# model.compile(optimizer='rmsprop', loss='mse', metrics=['mae'])
-    
-
-# model.fit(train_data, train_targets, epochs=80, batch_size=16, verbose=0)
-# test_mse_score, test_mae_score = model.evaluate(test_data, test_targets)
+model.evaluate(test_data,test_targets)
